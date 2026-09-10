@@ -125,6 +125,21 @@ export default function Home() {
     };
   }, []);
 
+  useEffect(() => {
+    const revealItems = document.querySelectorAll<HTMLElement>(".reveal-on-scroll");
+    const observer = new IntersectionObserver(
+      (entries) => entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+          observer.unobserve(entry.target);
+        }
+      }),
+      { threshold: 0.14 },
+    );
+    revealItems.forEach((item) => observer.observe(item));
+    return () => observer.disconnect();
+  }, []);
+
   const triggerGlitch = () => {
     setGlitch(true);
     window.setTimeout(() => setGlitch(false), 650);
@@ -186,18 +201,18 @@ export default function Home() {
           <div className="scroll-cue"><span /> SCROLL TO EXPLORE</div>
         </section>
 
-        <section className="manifesto-section section-grid">
+        <section className="manifesto-section section-grid reveal-on-scroll">
           <div className="section-index">00 / PROFILE</div>
           <div className="manifesto-statement">A multidisciplinary<br /><span>operator</span> with a<br />builder's instinct.</div>
           <div className="manifesto-detail">I move between finance, technology, people operations, and visual communication — translating ambitious ideas into practical systems, clear narratives, and useful products.</div>
         </section>
 
-        <section id="work" className="projects-section section-grid">
+        <section id="work" className="projects-section section-grid reveal-on-scroll">
           <div className="section-index">01 / SELECTED WORK</div>
           <div className="section-heading-wrap"><h2>Things<br /><em>built.</em></h2><span className="section-meta">02 PROJECTS / WEB + EDTECH</span></div>
           <div className="project-list">
             {projects.map((project) => (
-              <article className={`project-card ${project.accent}`} key={project.name}>
+                <article className={`project-card ${project.accent} reveal-on-scroll`} key={project.name}>
                 <div className="project-number">{project.number}</div>
                 <div className="project-main"><span className="card-eyebrow">{project.type}</span><h3>{project.name}</h3><p>{project.description}</p><div className="stack-row">{project.stack.map((item) => <span key={item}>{item}</span>)}</div></div>
                 <ArrowUpRight className="project-arrow" size={28} strokeWidth={1.25} />
@@ -206,17 +221,17 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="experience" className="experience-section section-grid">
+        <section id="experience" className="experience-section section-grid reveal-on-scroll">
           <div className="section-index">02 / EXPERIENCE</div>
           <div className="section-heading-wrap"><h2>On the<br /><em>record.</em></h2><span className="section-meta">05 ROLES / CROSS-FUNCTIONAL</span></div>
           <div className="experience-list">
             {experiences.map((experience) => (
-              <article className="experience-row" key={`${experience.company}-${experience.role}`}><div className="experience-period">{experience.period}</div><div className="experience-body"><span className="card-eyebrow">{experience.tag}</span><h3>{experience.role}</h3><div className="experience-company">{experience.company}</div><p>{experience.description}</p></div><ArrowUpRight className="row-arrow" size={22} /></article>
+              <article className="experience-row reveal-on-scroll" key={`${experience.company}-${experience.role}`}><div className="experience-period">{experience.period}</div><div className="experience-body"><span className="card-eyebrow">{experience.tag}</span><h3>{experience.role}</h3><div className="experience-company">{experience.company}</div><p>{experience.description}</p></div><ArrowUpRight className="row-arrow" size={22} /></article>
             ))}
           </div>
         </section>
 
-        <section className="education-section section-grid">
+        <section className="education-section section-grid reveal-on-scroll">
           <div className="section-index">03 / EDUCATION</div>
           <div className="section-heading-wrap"><h2>Learning<br /><em>in motion.</em></h2><span className="section-meta">MULTI-DISCIPLINARY / ALWAYS CURIOUS</span></div>
           <div className="education-table">
@@ -225,19 +240,19 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="skills-section section-grid">
+        <section className="skills-section section-grid reveal-on-scroll">
           <div className="section-index">04 / TOOLKIT</div>
           <div className="section-heading-wrap"><h2>Useful<br /><em>range.</em></h2><span className="section-meta">SKILLS / CURIOSITY / GRIT</span></div>
           <div className="skills-cloud">{skills.map((skill) => <span className={`skill-pill ${skill.group.toLowerCase()}`} key={skill.label}>{skill.label}</span>)}</div>
         </section>
 
-        <section className="achievements-section section-grid">
+        <section className="achievements-section section-grid reveal-on-scroll">
           <div className="section-index">05 / SIGNALS</div>
           <div className="section-heading-wrap"><h2>Proof<br /><em>of work.</em></h2><span className="section-meta">ACHIEVEMENTS / INITIATIVE</span></div>
           <div className="achievement-list"><div><span>01</span><p>All India Rank under 600 in Entrepreneurship, CUET 2023.</p></div><div><span>02</span><p>Rank 214 in BHU B.Com Hons Entrance Examination.</p></div><div><span>03</span><p>Academic Prelims Rank 3 in an institute-level competition.</p></div><div><span>04</span><p>Winner, institute-level Photography Challenge.</p></div></div>
         </section>
 
-        <section id="contact" className="contact-section">
+        <section id="contact" className="contact-section reveal-on-scroll">
           <div className="contact-topline"><span>06 / CONTACT</span><span>OPEN TO THE NEXT GOOD PROBLEM</span></div>
           <div className="contact-layout"><div><h2>Let's make<br /><em>something</em><br />useful.</h2></div><div className="contact-aside"><p>For opportunities, collaborations, or a thoughtful hello:</p><a className="email-link" href="mailto:darshnarayan7@gmail.com">DARSHNARAYAN7@GMAIL.COM <ArrowUpRight size={26} /></a><div className="contact-actions"><a className="button-primary" href={resumePdf} download><Download size={16} /> DOWNLOAD RESUME</a><a className="button-ghost" href="https://github.com/DarshNarainS" target="_blank" rel="noreferrer"><Github size={16} /> GITHUB <ExternalLink size={14} /></a></div></div></div>
           <div className="contact-footer"><span>DNR*</span><span>DESIGNED FOR THE WEB / BUILT WITH INTENT</span><span>© 2026</span></div>
