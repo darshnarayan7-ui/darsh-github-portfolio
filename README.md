@@ -10,7 +10,6 @@ A resume-first personal portfolio with a Spider-Noir inspired visual system: dee
 - Cursor-based parallax tilt on the hero artwork
 - IntersectionObserver-powered scroll reveal animations
 - Mobile navigation and reduced-motion accessibility support
-- Downloadable resume PDF
 
 ## Development
 

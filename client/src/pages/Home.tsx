@@ -1,17 +1,18 @@
 import { useEffect, useRef, useState } from "react";
 import {
   ArrowUpRight,
-  Download,
   ExternalLink,
   Github,
   Linkedin,
   Mail,
   Menu,
+  Volume2,
+  VolumeX,
   X,
 } from "lucide-react";
 
-const heroArtwork = "/manus-storage/darsh-noir-hero_ea008e6f.png";
-const resumePdf = "/manus-storage/Darsh_Srivastava_Combined_84c28263.pdf";
+const assetBase = import.meta.env.BASE_URL;
+const heroArtwork = assetBase === "/" ? "/manus-storage/darsh-noir-hero_ea008e6f.png" : `${assetBase}assets/darsh-noir-hero.png`;
 
 const experiences = [
   {
@@ -106,7 +107,30 @@ export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [glitch, setGlitch] = useState(false);
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
+  const [soundOn, setSoundOn] = useState(false);
   const heroRef = useRef<HTMLDivElement>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
+
+  const playFx = (kind: "click" | "hover" | "glitch") => {
+    if (!soundOn || typeof window === "undefined") return;
+    const AudioContextClass = window.AudioContext || (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+    if (!AudioContextClass) return;
+    const context = audioContextRef.current ?? new AudioContextClass();
+    audioContextRef.current = context;
+    const oscillator = context.createOscillator();
+    const gain = context.createGain();
+    const now = context.currentTime;
+    const frequency = kind === "glitch" ? 74 : kind === "hover" ? 310 : 180;
+    oscillator.type = kind === "glitch" ? "sawtooth" : "square";
+    oscillator.frequency.setValueAtTime(frequency, now);
+    oscillator.frequency.exponentialRampToValueAtTime(kind === "glitch" ? 42 : frequency * 1.8, now + (kind === "glitch" ? .22 : .08));
+    gain.gain.setValueAtTime(.0001, now);
+    gain.gain.exponentialRampToValueAtTime(kind === "glitch" ? .045 : .018, now + .01);
+    gain.gain.exponentialRampToValueAtTime(.0001, now + (kind === "glitch" ? .25 : .1));
+    oscillator.connect(gain).connect(context.destination);
+    oscillator.start(now);
+    oscillator.stop(now + (kind === "glitch" ? .26 : .11));
+  };
 
   useEffect(() => {
     const node = heroRef.current;
@@ -141,8 +165,17 @@ export default function Home() {
   }, []);
 
   const triggerGlitch = () => {
+    playFx("glitch");
     setGlitch(true);
     window.setTimeout(() => setGlitch(false), 650);
+  };
+
+  const toggleSound = () => {
+    setSoundOn((value) => {
+      const next = !value;
+      if (next) window.setTimeout(() => playFx("click"), 0);
+      return next;
+    });
   };
 
   const closeMenu = () => setMenuOpen(false);
@@ -156,15 +189,21 @@ export default function Home() {
           <span className="brand-sub">PORTFOLIO / 2026</span>
         </a>
         <nav className={menuOpen ? "main-nav is-open" : "main-nav"}>
-          <a href="#work" onClick={closeMenu}>WORK <span>01</span></a>
-          <a href="#experience" onClick={closeMenu}>EXPERIENCE <span>02</span></a>
-          <a href="#contact" onClick={closeMenu}>CONTACT <span>03</span></a>
+          <a href="#work" onMouseEnter={() => playFx("hover")} onClick={() => { playFx("click"); closeMenu(); }}>WORK <span>01</span></a>
+          <a href="#experience" onMouseEnter={() => playFx("hover")} onClick={() => { playFx("click"); closeMenu(); }}>EXPERIENCE <span>02</span></a>
+          <a href="#contact" onMouseEnter={() => playFx("hover")} onClick={() => { playFx("click"); closeMenu(); }}>CONTACT <span>03</span></a>
         </nav>
+        <button className={soundOn ? "sound-toggle is-on" : "sound-toggle"} onClick={toggleSound} aria-label={soundOn ? "Disable sound effects" : "Enable sound effects"} title={soundOn ? "Sound effects on" : "Enable sound effects"}>
+          {soundOn ? <Volume2 size={15} /> : <VolumeX size={15} />} <span>{soundOn ? "SFX ON" : "SFX"}</span>
+        </button>
         <button className="menu-toggle" aria-label="Toggle navigation" onClick={() => setMenuOpen((value) => !value)}>
           {menuOpen ? <X size={21} /> : <Menu size={21} />}
         </button>
       </header>
 
+      <div className="noir-scanlines" aria-hidden="true" />
+      <div className="noir-signal signal-a" aria-hidden="true" />
+      <div className="noir-signal signal-b" aria-hidden="true" />
       <main id="top">
         <section className="hero-section" aria-labelledby="intro-title">
           <div className="hero-rail rail-left">
@@ -212,7 +251,7 @@ export default function Home() {
           <div className="section-heading-wrap"><h2>Things<br /><em>built.</em></h2><span className="section-meta">02 PROJECTS / WEB + EDTECH</span></div>
           <div className="project-list">
             {projects.map((project) => (
-                <article className={`project-card ${project.accent} reveal-on-scroll`} key={project.name}>
+              <article className={`project-card ${project.accent} reveal-on-scroll`} onMouseEnter={() => playFx("hover")} key={project.name}>
                 <div className="project-number">{project.number}</div>
                 <div className="project-main"><span className="card-eyebrow">{project.type}</span><h3>{project.name}</h3><p>{project.description}</p><div className="stack-row">{project.stack.map((item) => <span key={item}>{item}</span>)}</div></div>
                 <ArrowUpRight className="project-arrow" size={28} strokeWidth={1.25} />
@@ -254,7 +293,7 @@ export default function Home() {
 
         <section id="contact" className="contact-section reveal-on-scroll">
           <div className="contact-topline"><span>06 / CONTACT</span><span>OPEN TO THE NEXT GOOD PROBLEM</span></div>
-          <div className="contact-layout"><div><h2>Let's make<br /><em>something</em><br />useful.</h2></div><div className="contact-aside"><p>For opportunities, collaborations, or a thoughtful hello:</p><a className="email-link" href="mailto:darshnarayan7@gmail.com">DARSHNARAYAN7@GMAIL.COM <ArrowUpRight size={26} /></a><div className="contact-actions"><a className="button-primary" href={resumePdf} download><Download size={16} /> DOWNLOAD RESUME</a><a className="button-ghost" href="https://github.com/DarshNarainS" target="_blank" rel="noreferrer"><Github size={16} /> GITHUB <ExternalLink size={14} /></a></div></div></div>
+          <div className="contact-layout"><div><h2>Let's make<br /><em>something</em><br />useful.</h2></div><div className="contact-aside"><p>For opportunities, collaborations, or a thoughtful hello:</p><a className="email-link" href="mailto:darshnarayan7@gmail.com">DARSHNARAYAN7@GMAIL.COM <ArrowUpRight size={26} /></a><div className="contact-actions"><a className="button-ghost" href="https://github.com/DarshNarainS" target="_blank" rel="noreferrer"><Github size={16} /> GITHUB <ExternalLink size={14} /></a></div></div></div>
           <div className="contact-footer"><span>DNR*</span><span>DESIGNED FOR THE WEB / BUILT WITH INTENT</span><span>© 2026</span></div>
         </section>
       </main>
