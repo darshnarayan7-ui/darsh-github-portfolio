@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 
 const assetBase = import.meta.env.BASE_URL;
-const heroArtwork = assetBase === "/" ? "/manus-storage/darsh-noir-hero_ea008e6f.png" : `${assetBase}assets/darsh-noir-hero.png`;
+const heroArtwork = assetBase === "/" ? "/manus-storage/darsh-noir-hero_ea008e6f.png" : `${assetBase}assets/darsh-noir-hero.jpg`;
 
 const experiences = [
   {
