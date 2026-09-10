@@ -10,9 +10,8 @@ import {
   X,
 } from "lucide-react";
 
-const assetBase = import.meta.env.BASE_URL;
-const heroArtwork = `${assetBase}assets/darsh-noir-hero.png`;
-const resumePdf = `${assetBase}assets/Darsh_Srivastava_Combined.pdf`;
+const heroArtwork = "/manus-storage/darsh-noir-hero_ea008e6f.png";
+const resumePdf = "/manus-storage/Darsh_Srivastava_Combined_84c28263.pdf";
 
 const experiences = [
   {
